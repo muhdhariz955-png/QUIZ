@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ms">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kenali Jenayah — Pendidikan Islam Tingkatan 3</title>
+<style>
+:root{--green:#075b43;--green2:#08784b;--gold:#dfbd62;--cream:#f7f6ed;--ink:#123e35}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,sans-serif}
+header{background:var(--green);color:white;padding:20px 5vw;border-bottom:4px solid var(--gold)}header h1{margin:0;font-size:clamp(27px,4vw,40px)}header p{margin:5px 0 0}
+main{max-width:1120px;margin:auto;padding:20px}.row{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}.panel{background:white;border:1px solid #c9d9ca;border-radius:18px;padding:20px;box-shadow:0 5px 20px #163b250b}
+button{font:inherit;font-weight:800;font-size:clamp(17px,2vw,22px);padding:15px 20px;min-height:58px;border:0;border-radius:13px;cursor:pointer;color:white}button:focus-visible{outline:4px solid #e5bc4b;outline-offset:3px}button:disabled{opacity:.45;cursor:not-allowed}.green{background:#07834e}.red{background:#d93838}.gold{background:#e4c46c;color:#153b30}.muted{background:#e9f2e9;color:#16483a}
+.track{height:10px;background:#e0e8df;border-radius:20px;overflow:hidden;width:min(470px,72vw);margin-top:8px}.fill{height:100%;background:var(--gold);width:0;transition:width .25s}
+.grid{display:grid;grid-template-columns:1fr 1.1fr;gap:18px;margin-top:16px}.hidden{display:none!important}.camera{width:100%;aspect-ratio:4/3;object-fit:cover;background:#173f35;border-radius:12px;transform:scaleX(-1)}.word{font-size:clamp(32px,5vw,48px);font-weight:900;color:var(--green);text-align:center;padding:15px 8px}.definition{font-size:clamp(18px,2.2vw,24px);line-height:1.5;text-align:center;background:#f8f3df;border:1px solid #eadcb0;border-radius:14px;padding:20px}.answers{display:grid;grid-template-columns:1fr 1fr;gap:12px}.feedback{border-radius:12px;padding:14px;margin-top:14px;line-height:1.55}.small{font-size:14px}.review{display:grid;gap:10px}
+@media(max-width:740px){main{padding:10px}.grid{grid-template-columns:1fr}.panel{padding:14px}header{padding:16px}.camera{max-height:300px}}
+</style>
+</head>
+<body>
+<header><h1>🌙 KENALI <span style="color:#f0d47c">JENAYAH</span></h1><p>Pendidikan Islam Tingkatan 3 · Permainan Betul atau Salah</p></header>
+<main>
+<div class="row">
+ <div><b id="progressText">Sedia untuk bermain</b><div class="track"><div id="progress" class="fill"></div></div></div>
+ <div class="panel" style="padding:10px 16px;text-align:center"><div class="small">MARKAH</div><b id="score" style="font-size:26px">0</b> / 15</div>
+</div>
+<section id="intro" class="panel" style="text-align:center;margin-top:16px;padding:28px 20px">
+ <div style="font-size:52px">🧠 ↔️</div><h2>Kenali istilah dan definisi</h2>
+ <p style="line-height:1.7;max-width:720px;margin:12px auto">Condongkan kepala ke kiri untuk memilih <b>BETUL</b> dan ke kanan untuk memilih <b>SALAH</b>. Anda juga boleh menggunakan butang jawapan. Permainan ini memerlukan kebenaran kamera jika anda mahu menggunakan pergerakan kepala.</p>
+ <div class="row" style="justify-content:center;margin-top:18px"><button id="start" class="green">MULA BERMAIN</button><button id="camStart" class="muted">📷 AKTIFKAN KAMERA</button></div>
+ <p id="camStatus" class="small" role="status" style="margin-top:14px">Kamera belum diaktifkan. Anda boleh bermain dengan butang.</p>
+ <p class="small" style="max-width:760px;margin:12px auto">Privasi: kod ini tidak menyimpan atau menghantar rakaman kamera. Pengesanan muka dibuat dalam pelayar menggunakan MediaPipe. Pustaka MediaPipe dimuatkan daripada CDN dan memerlukan internet.</p>
+</section>
+<section id="play" class="grid hidden">
+ <div class="panel">
+  <div class="row"><b>📷 Pengesanan kepala</b><span id="camBadge" class="small">Tidak aktif</span></div>
+  <div style="position:relative;margin-top:12px"><video id="video" class="camera" autoplay muted playsinline></video><div id="cameraPlaceholder" style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:22px;color:white">Aktifkan kamera untuk menjawab menggunakan pergerakan kepala</div></div>
+  <div class="muted" style="border-radius:12px;padding:14px;margin-top:12px"><b>Cara menjawab</b><div class="row" style="justify-content:space-around;text-align:center;margin-top:12px"><div>⬅️<br><b>KE KIRI</b><br>BETUL</div><div>➡️<br><b>KE KANAN</b><br>SALAH</div></div></div>
+  <p id="tiltStatus" class="small" aria-live="polite">Gunakan butang jika kamera tidak aktif.</p>
+ </div>
+ <div class="panel">
+  <div id="qNumber" class="small" style="color:#99751c;font-weight:850">SOALAN 1 / 15</div><div id="word" class="word">Rompak</div><div id="definition" class="definition"></div>
+  <p style="text-align:center;font-weight:750;margin:18px 0 12px">Adakah perkataan ini sepadan dengan definisinya?</p>
+  <div class="answers"><button id="trueBtn" class="green">✓ BETUL</button><button id="falseBtn" class="red">✕ SALAH</button></div>
+  <div id="feedback" class="feedback hidden" aria-live="polite"></div><button id="nextBtn" class="gold hidden" style="width:100%;margin-top:14px">SOALAN SETERUSNYA →</button>
+ </div>
+</section>
+<section id="results" class="panel hidden" style="margin-top:16px"><div style="text-align:center"><div style="font-size:52px">🏆</div><h2>TAHNIAH! ANDA TELAH MENYELESAIKAN PERMAINAN!</h2><div id="finalScore" style="font-size:40px;font-weight:900;color:#08784b">0 / 15</div><div id="percent" style="font-size:23px;font-weight:800">0%</div><p id="encourage"></p></div><h3>Semakan jawapan</h3><div id="review" class="review"></div><button id="restart" class="green" style="width:100%;margin-top:18px">↻ MAIN SEMULA</button></section>
+<footer class="small" style="text-align:center;color:#61756b;margin:20px 0">Aktiviti padanan istilah dan definisi. Gunakan bersama bimbingan guru dan sumber pembelajaran yang sahih.</footer>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js" crossorigin="anonymous"></script>
+<script>
+(() => {
+"use strict";
+const questions=[
+{word:"Rompak",definition:"Mengambil harta orang lain dengan menggunakan kekerasan atau ancaman.",answer:true,why:"Rompak melibatkan pengambilan harta orang lain secara kekerasan atau ancaman."},
+{word:"Mencuri",definition:"Mengambil harta orang lain secara sembunyi-sembunyi tanpa hak.",answer:true,why:"Mencuri ialah mengambil harta orang lain tanpa izin dan secara tidak sah."},
+{word:"Rasuah",definition:"Memberi atau menerima suapan untuk mendapatkan kelebihan secara tidak wajar.",answer:true,why:"Rasuah melibatkan suapan untuk mempengaruhi sesuatu keputusan atau tindakan."},
+{word:"Fitnah",definition:"Menyampaikan tuduhan atau berita palsu yang boleh menjatuhkan maruah seseorang.",answer:true,why:"Fitnah boleh merosakkan kehormatan dan hubungan sesama manusia."},
+{word:"Qazaf",definition:"Menuduh seseorang melakukan zina tanpa memenuhi pembuktian yang ditetapkan syarak.",answer:true,why:"Qazaf berkaitan tuduhan zina yang tidak memenuhi pembuktian menurut hukum Islam."},
+{word:"Zina",definition:"Hubungan seksual antara lelaki dan perempuan yang bukan suami isteri yang sah.",answer:true,why:"Zina dilarang dalam Islam dan berkaitan dengan kewajipan menjaga kehormatan diri."},
+{word:"Amanah",definition:"Menjaga tanggungjawab dan hak yang diberikan kepada kita.",answer:false,why:"Amanah ialah sifat terpuji, bukannya jenayah."},
+{word:"Khianat",definition:"Menunaikan tanggungjawab dengan jujur dan menjaga kepercayaan orang lain.",answer:false,why:"Definisi itu menerangkan amanah. Khianat bermaksud mengingkari kepercayaan atau tanggungjawab."},
+{word:"Pecah amanah",definition:"Menyalahgunakan harta atau tanggungjawab yang diamanahkan kepada seseorang.",answer:true,why:"Pecah amanah berlaku apabila kepercayaan atau harta yang diamanahkan disalahgunakan."},
+{word:"Menyamun",definition:"Mengambil harta orang lain dengan kekerasan atau ancaman.",answer:true,why:"Samun melibatkan penggunaan kekerasan atau ancaman untuk mendapatkan harta."},
+{word:"Mengumpat",definition:"Menceritakan keburukan seseorang yang benar tetapi tidak disukainya jika diketahui.",answer:true,why:"Mengumpat ialah menyebut keburukan seseorang yang benar tetapi tidak disukainya jika diketahui."},
+{word:"Saksi",definition:"Orang yang memberikan keterangan tentang perkara yang diketahui atau disaksikannya.",answer:false,why:"Saksi bukan jenayah; saksi ialah orang yang memberikan keterangan."},
+{word:"Berbohong",definition:"Menyampaikan sesuatu yang tidak benar dengan sengaja.",answer:true,why:"Berbohong ialah perbuatan berkata tidak benar dan bercanggah dengan sifat jujur."},
+{word:"Membuli",definition:"Menggunakan kuasa atau kekuatan untuk menyakiti, menakutkan atau mengganggu orang lain.",answer:true,why:"Buli boleh menyebabkan kecederaan atau tekanan dan merupakan perbuatan yang salah."},
+{word:"Menjaga maruah",definition:"Melakukan perbuatan yang mencemarkan kehormatan diri dan orang lain.",answer:false,why:"Definisi ini menerangkan perbuatan mencemarkan maruah, bukan menjaga maruah."}
+];
+const $=id=>document.getElementById(id);let deck=[],index=0,score=0,answered=false,wrong=[],stream=null,faceMesh=null,processing=false,tiltLock=false,raf=null,lastAnswerTime=0;
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function startGame(){deck=shuffle(questions.map(q=>({...q})));index=0;score=0;wrong=[];$("score").textContent="0";$("intro").classList.add("hidden");$("results").classList.add("hidden");$("play").classList.remove("hidden");showQuestion()}
+function showQuestion(){answered=false;const q=deck[index];$("qNumber").textContent=`SOALAN ${index+1} / ${deck.length}`;$("word").textContent=q.word;$("definition").textContent=q.definition;$("feedback").classList.add("hidden");$("nextBtn").classList.add("hidden");$("trueBtn").disabled=$("falseBtn").disabled=false;$("progressText").textContent=`Soalan ${index+1} daripada ${deck.length}`;$("progress").style.width=(index/deck.length*100)+"%"}
+function answer(choice,source){if(answered)return;answered=true;const q=deck[index],correct=choice===q.answer;if(correct)score++;else wrong.push({q,choice});$("score").textContent=score;$("trueBtn").disabled=$("falseBtn").disabled=true;const f=$("feedback");f.classList.remove("hidden");f.style.background=correct?"#e2f6e8":"#fff0ec";f.style.color=correct?"#075b43":"#9e2b23";f.innerHTML=`<b>${correct?"Tahniah! Jawapan anda tepat! 🎉":"Belum tepat! Mari fahami istilah dengan betul."}</b><br>${esc(q.why)}<br><b>Jawapan: ${q.answer?"BETUL":"SALAH"}</b>`;$("nextBtn").classList.remove("hidden");$("progress").style.width=((index+1)/deck.length*100)+"%";if(source==="camera")$("tiltStatus").textContent="Jawapan direkodkan. Tunggu soalan seterusnya."}
+function next(){if(!answered)return;if(++index>=deck.length){endGame();return}showQuestion()}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function endGame(){$("play").classList.add("hidden");$("results").classList.remove("hidden");$("progressText").textContent="Permainan selesai";$("progress").style.width="100%";$("finalScore").textContent=`${score} / ${deck.length}`;$("percent").textContent=Math.round(score/deck.length*100)+"%";$("encourage").textContent=score>=13?"Cemerlang! Anda sangat memahami istilah ini.":score>=9?"Bagus! Ulang kaji istilah yang masih mengelirukan.":"Teruskan berusaha. Baca semula definisi dan cuba lagi.";const r=$("review");r.replaceChildren();if(!wrong.length){r.innerHTML='<div class="feedback" style="background:#e2f6e8">Hebat! Semua jawapan anda betul.</div>'}else wrong.forEach(({q})=>{const d=document.createElement("div");d.className="feedback";d.style.background="#fff0ec";d.innerHTML=`<b>${esc(q.word)}</b><br>Definisi: ${esc(q.definition)}<br>Jawapan betul: <b>${q.answer?"BETUL":"SALAH"}</b><br>${esc(q.why)}`;r.appendChild(d)})}
+$("start").addEventListener("click",startGame);$("trueBtn").addEventListener("click",()=>answer(true,"button"));$("falseBtn").addEventListener("click",()=>answer(false,"button"));$("nextBtn").addEventListener("click",next);$("restart").addEventListener("click",startGame);
+async function startCamera(){$("camStatus").textContent="Meminta kebenaran kamera…";try{if(!navigator.mediaDevices?.getUserMedia)throw Error("Akses kamera memerlukan HTTPS atau localhost.");if(!window.FaceMesh)throw Error("MediaPipe tidak dapat dimuatkan. Semak sambungan internet.");stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"user",width:{ideal:640},height:{ideal:480}},audio:false});const v=$("video");v.srcObject=stream;await v.play();$("cameraPlaceholder").classList.add("hidden");$("camBadge").textContent="Kamera aktif";$("camStatus").textContent="Kamera aktif. Condong kepala kiri = BETUL; kanan = SALAH.";faceMesh=new FaceMesh({locateFile:file=>`https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`});faceMesh.setOptions({maxNumFaces:1,refineLandmarks:false,minDetectionConfidence:.6,minTrackingConfidence:.6});faceMesh.onResults(onFaceResults);processingLoop()}catch(e){$("camStatus").textContent="Kamera tidak dapat dimulakan: "+e.message+" Anda masih boleh bermain dengan butang."}}
+async function processingLoop(){if(!stream||!faceMesh)return;const v=$("video");if(v.readyState>=2&&!processing){processing=true;try{await faceMesh.send({image:v})}catch(e){}processing=false}raf=requestAnimationFrame(processingLoop)}
+function onFaceResults(res){if(!res.multiFaceLandmarks?.length){$("tiltStatus").textContent="Pastikan wajah kelihatan di hadapan kamera.";return}const p=res.multiFaceLandmarks[0],leftEye=p[33],rightEye=p[263];let angle=Math.atan2(rightEye.y-leftEye.y,rightEye.x-leftEye.x)*180/Math.PI;$("tiltStatus").textContent=Math.abs(angle)<12?"Kepala tegak — condongkan kepala untuk menjawab.":"Kecondongan dikesan. Pastikan gerakan kepala jelas.";if(answered||tiltLock||Math.abs(angle)<16)return;tiltLock=true;answer(angle>0,"camera");setTimeout(()=>{tiltLock=false},1300)}
+$("camStart").addEventListener("click",startCamera);
+window.addEventListener("pagehide",()=>{if(raf)cancelAnimationFrame(raf);if(stream)stream.getTracks().forEach(t=>t.stop());if(faceMesh)faceMesh.close()});
+})();
+</script>
+</body>
+</html>
